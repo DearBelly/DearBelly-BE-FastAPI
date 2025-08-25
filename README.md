@@ -1,4 +1,4 @@
-# Mom4U-Server-Spring Repository
+# Mom4U-Server-FastAPI Repository
 
 ## 🚀프로젝트 개요🚀
 - **Framework**: Fast API
@@ -6,12 +6,12 @@
 
 ---
 
-## 🧩 주요 기술 스택
+## 🧩 주요 기술 스택 🧩
 
 
 ---
 
-## 📁 프로젝트 구조 (예시)
+## 📁 프로젝트 구조 📁
 
 
 ---
@@ -36,7 +36,7 @@ DearBelly FastAPI Server Git 커밋 메시지 작성 규칙
 | `feat`     | 새로운 기능 추가 |
 | `fix`      | 버그 수정 |
 | `refactor` | 기능 변화 없는 리팩토링 |
-| `style`    | 코드 포맷팅, 스타일 변경 (세미콜론, 공백 등) |
+| `del`    | 불필요한 파일 및 주석 삭제 |
 | `test`     | 테스트 코드 추가/수정 |
 | `docs`     | 문서 작성 또는 수정 |
 | `chore`    | 빌드, 설정, CI, 기타 유지관리 |
