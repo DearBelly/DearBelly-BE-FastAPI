@@ -1,7 +1,11 @@
-torch
-torchvision
+pytorch-cuda=11.8
+torch==2.8.0
+torchvision==0.23.0
 scikit-learn
-tqdm
-matplotlib
-pillow
+tqdm==4.67.1
+pillow==11.3.0
 pydantic
+uvicorn
+Pillow
+torchvision
+fastapi
