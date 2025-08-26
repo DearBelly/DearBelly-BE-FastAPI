@@ -4,4 +4,4 @@ scikit-learn
 tqdm
 matplotlib
 pillow
-BaseModel
+pydantic
