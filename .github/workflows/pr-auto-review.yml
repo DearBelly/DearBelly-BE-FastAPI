@@ -43,6 +43,6 @@ jobs:
       - name: Run Gemini Code Review Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_PAT }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python3 deployment/generate_review.py
