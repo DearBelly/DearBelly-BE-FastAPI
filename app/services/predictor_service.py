@@ -47,9 +47,9 @@ class PredictorService:
         return idx2label
 
     def _load_model(self, model_path: Path) -> LightCNN:
-        model = LightCNN(num_classes=self.num_classes).to(self.device)
-        checkpoint = torch.load(model_path, map_location=self.device)
-        model.load_state_dict(checkpoint["model_state_dict"])
+        import __main__
+        __main__.LightCNN = LightCNN
+        model = torch.load(model_path, map_location=self.device, weights_only=False)
         model.eval()
         return model
 

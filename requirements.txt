@@ -5,6 +5,6 @@ pydantic
 pydantic-settings
 boto3
 requests
-torch==2.8.0+cu126
-torchvision==0.23.0+cu126
+torch==2.8.0
+torchvision==0.23.0
 Pillow==11.3.0
