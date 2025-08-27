@@ -1,7 +1,7 @@
 
 import asyncio
 import redis.asyncio as redis
-from app.core.config import settings
+from app.core.config import Settings
 from app.schemas.job import ImageJob
 from app.worker.tasks import process_image_scan
 
@@ -28,8 +28,12 @@ class JobWorker:
                     for msg_id, fields in entries:
                         try:
                             job = ImageJob.model_validate_json(fields["json"])
-                            asyncio.create_task(process_image_scan(job, self.redis_client))
-                            await self.redis_client.xack(settings.STREAM_JOB, settings.GROUP_NAME, msg_id)
+                            await process_image_scan(job, redis_client)
+                            # 처리 성공 시에만 ack
+                            await redis_client.xack(settings.STREAM_JOB, settings.GROUP_NAME, msg_id)
+                        except asyncio.CancelledError:
+                            # 취소되면 재전송되도록 ack 하지 않음
+                            raise
                         except Exception as e:
                             await self.redis_client.xadd(
                                 f"{settings.STREAM_JOB}:DLQ",
