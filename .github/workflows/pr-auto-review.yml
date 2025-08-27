@@ -22,11 +22,12 @@ jobs:
       - name: Set up Python env
         uses: actions/setup-python@v1
         with:
-          python-version: '3.11.8'
+          python-version: '3.11.13'
 
       - name: Install Python Packages
         run: |
-          pip install google-generativeai
+          python -m pip install --upgrade pip
+          pip install google-generativeai PyGithub
 
       - name: Get Git Diff
         id: git_diff
@@ -43,6 +44,6 @@ jobs:
       - name: Run Gemini Code Review Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_PAT }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python3 deployment/generate_review.py
