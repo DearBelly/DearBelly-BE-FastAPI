@@ -126,7 +126,8 @@ celerybeat.pid
 .env
 .venv
 env/
-venv/
+dearbelly/Lib/
+dearbelly/Scripts/
 ENV/
 env.bak/
 venv.bak/
@@ -174,9 +175,9 @@ pyrightconfig.json
 
 .idea/
 
-.png
-.jpeg
-.webp
+*.png
+*.jpeg
+*.webp
 
 **/Lib/
 **/pyvenv.cfg
