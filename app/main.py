@@ -3,9 +3,9 @@ from app.core.lifespan import lifespan
 from app.api.endpoints import predictions
 
 app = FastAPI(
-    title="DearBelly AI-Powered Pill Identification Service",
-    description="An AI service to identify pills from images, using a job queue for async processing.",
-    version="2.0.0",
+    title="DearBelly CV API",
+    description="DearBelly CV를 위한 Swagger 입니다.",
+    version="1.0.0",
     lifespan=lifespan
 )
 
