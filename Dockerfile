@@ -12,7 +12,7 @@ RUN python3 -m venv "$VENV_PATH" && \
     "$VENV_PATH/bin/python" -m pip install --upgrade pip
 
 COPY . .
-RUN "$VENV_PATH/bin/pip" install --no-cache-dir -r app/requirements.txt
+RUN "$VENV_PATH/bin/pip" install --no-cache-dir -r requirements.txt
 
 ENV PATH="$VENV_PATH/bin:$PATH"
 
