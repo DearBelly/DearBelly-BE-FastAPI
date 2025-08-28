@@ -11,7 +11,6 @@ class S3Service:
         self.client = boto3.client(
             "s3",
             region_name=settings.S3_REGION,
-            endpoint_url=settings.S3_ENDPOINT_URL,
             config=BotoConfig(
                 retries={"max_attempts": 5, "mode": "standard"},
                 read_timeout=30,

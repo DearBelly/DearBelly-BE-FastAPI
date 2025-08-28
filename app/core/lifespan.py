@@ -25,9 +25,6 @@ async def lifespan(app: FastAPI):
     worker = JobWorker(redis_client)
     worker_task = asyncio.create_task(worker.run())
 
-    app.state.redis_client = redis_client
-    app.state.worker_task = worker_task
-
     try:
         yield
     finally:
