@@ -22,14 +22,9 @@ fi
 
 echo "Pulling image: ${IMAGE}"
 # docker pull
-docker pull ${ECR_URI}/dearbelly-cv:latest
+docker compose pull ${ECR_URI}/dearbelly-cv:latest
+docker compose up -d --no-deps --force-recreate app-${AFTER_COMPOSE_COLOR}
 
-# 새 컨테이너 실행
-docker run --gpus all -d \
-  --name "app-${AFTER_COLOR}" \
-  --env-file ./.env \
-  -p "${HOST_PORT}:8000" \
-  ${ECR_URI}/dearbelly-cv:latest
 
 # 새 컨테이너가 running 될 때까지 대기
 for i in $(seq 1 60); do
