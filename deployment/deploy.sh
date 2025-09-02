@@ -22,12 +22,12 @@ fi
 
 echo "Pulling image: ${IMAGE}"
 # docker pull
-docker compose pull ${ECR_URI}/dearbelly-cv:latest
+docker compose pull app-${AFTER_COMPOSE_COLOR}
 docker compose up -d --no-deps --force-recreate app-${AFTER_COMPOSE_COLOR}
 
 
 # 새 컨테이너가 running 될 때까지 대기
-for i in $(seq 1 60); do
+for i in $(seq 1 600); do
   if docker ps --filter "name=^/app-${AFTER_COLOR}$" --filter "status=running" --format '{{.Names}}' | grep -q .; then
     echo "New app-${AFTER_COLOR} container is running."
     break
@@ -51,23 +51,3 @@ if docker ps --filter "name=app-${AFTER_COMPOSE_COLOR}" --filter "status=running
         echo "Error occured: Failed to update Nginx config. Exiting deploy script."
         exit 1
   fi
-
-  echo "Reloding Nginx in Container"
-  if ! docker exec $NGINX_ID nginx -s reload; then
-    ERR_MSG='Failed to update Nginx config'
-    exit 1
-  fi
-
-  if ! docker compose restart nginx; then
-    ERR_MSG='Failed to reload Nginx'
-    exit 1
-  fi
-
-  # 이전 컨테이너 종료
-  docker stop app-${BEFORE_COMPOSE_COLOR}
-  docker rm app-${BEFORE_COMPOSE_COLOR}
-  docker image prune -af
-fi
-
-echo "Deployment success."
-exit 0
