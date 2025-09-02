@@ -14,7 +14,7 @@ def get_redis_client(request: Request) -> redis.Redis:
 async def create_prediction_job(job_request: JobRequest, redis_client: redis.Redis = Depends(get_redis_client)):
     correlation_id = str(uuid.uuid4())
     job = ImageJob(
-        correlationId=correlationId,
+        correlationId=correlation_id,
         presignedUrl=job_request.presigned_url,
         replyQueue=settings.STREAM_RESULT,
         callbackUrl=None,
