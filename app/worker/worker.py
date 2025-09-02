@@ -17,9 +17,9 @@ class JobWorker:
         while True:
             try:
                 resp = await self.redis_client.xreadgroup(
-                    groupname=settings.GROUP_NAME,
-                    consumername=settings.CONSUMER_NAME,
-                    streams={settings.STREAM_JOB: ">"},
+                    group_name=settings.GROUP_NAME,
+                    consumer_name=settings.CONSUMER_NAME,
+                    stream_name={settings.STREAM_JOB: ">"},
                     count=10,
                     block=5000,
                 )
