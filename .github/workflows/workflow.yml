@@ -37,6 +37,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Transfer deploy file to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ./deployment/
+          target: /home/ubuntu/deployment
 
   deploy:
     name: Deploy
@@ -52,8 +60,8 @@ jobs:
           port: 22
           script: |
             # 1. cd
-            mkdir -p ~/dearbelly
-            cd ~/dearbelly
+            mkdir -p ~/dearbelly/deployment
+            cd ~/dearbelly/deployment
 
             # 2. .env file
             echo "${{ secrets.ENV }}" > .env
@@ -69,5 +77,5 @@ jobs:
             docker pull ${{ secrets.ECR_URI }}/dearbelly-cv:latest
 
             # 6. docker start
-            # TODO : 스크립트 작성
-            docker run -d --name app-blue -p 8000:8000 ${{ secrets.ECR_URI }}/dearbelly-cv:latest
+            chmod +x deploy.sh
+            source deploy.sh
