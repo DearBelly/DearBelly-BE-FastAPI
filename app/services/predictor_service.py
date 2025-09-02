@@ -6,6 +6,7 @@ from torchvision import transforms
 from PIL import Image
 import json
 from pathlib import Path
+from io import BytesIO
 
 class LightCNN(nn.Module):
     def __init__(self, num_classes):
@@ -53,8 +54,8 @@ class PredictorService:
         model.eval()
         return model
 
-    def predict(self, image_path: Path) -> tuple[str, str, float]:
-        image = Image.open(image_path).convert('RGB')
+    async def predict(self, stream_file: BytesIO) -> tuple[str, str, float]:
+        image = Image.open(stream_file).convert('RGB')
         input_tensor = self.transform(image).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
