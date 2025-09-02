@@ -1,6 +1,6 @@
 services:
   app-blue:
-    image: ${ECR_URI}/dearbelly-dv:latest
+    image: ${ECR_URI}/dearbelly-cv:latest
     ports:
       - "8000:8000"
     env_file:
@@ -15,7 +15,7 @@ services:
     container_name: app-blue
 
   app-green:
-    image: ${ECR_URI}/dearbelly-dv:latest
+    image: ${ECR_URI}/dearbelly-cv:latest
     ports:
       - "8001:8000"
     env_file:
