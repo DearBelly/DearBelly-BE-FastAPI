@@ -1,8 +1,8 @@
 
 import boto3
 from botocore.config import Config as BotoConfig
-from pathlib import Path
 import requests
+from io import BytesIO
 
 from app.core.config import settings
 
@@ -18,10 +18,10 @@ class S3Service:
             ),
         )
 
-    def download_file_from_presigned_url(self, presigned_url: str, destination: Path):
+    def download_file_from_presigned_url(self, presigned_url: str) -> BytesIO:
         response = requests.get(presigned_url)
         response.raise_for_status()
-        with open(destination, "wb") as f:
-            f.write(response.content)
+
+        return BytesIO(response.content) # response 안의 content Stream으로 처리
 
 s3_service = S3Service()

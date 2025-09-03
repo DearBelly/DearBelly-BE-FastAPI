@@ -1,7 +1,5 @@
 
 import asyncio
-import json
-from pathlib import Path
 import redis.asyncio as redis
 from datetime import datetime
 
@@ -13,13 +11,10 @@ from app.services.s3_service import s3_service
 async def process_image_scan(job: ImageJob, redis_client: redis.Redis):
     correlation_id = job.correlationId
     print(f"[task] Start image scan for job_id={correlation_id}")
-
-    temp_image_path = Path(f"/tmp/{correlation_id}.jpg")
-
     try:
-        s3_service.download_file_from_presigned_url(job.presignedUrl, temp_image_path)
+        stream_file = await asyncio.to_thread(s3_service.download_file_from_presigned_url(job.presignedUrl))
 
-        pill_name, label, confidence = predictor_service.predict(temp_image_path)
+        pill_name, label, confidence = await asyncio.to_thread(predictor_service.predict(stream_file))
 
         finished_at = datetime.utcnow().isoformat()
 
@@ -43,5 +38,4 @@ async def process_image_scan(job: ImageJob, redis_client: redis.Redis):
     except Exception as e:
         print(f"[task] Failed to process job_id={correlation_id}: {e}")
     finally:
-        if temp_image_path.exists():
-            temp_image_path.unlink()
+        print(f"[task] Image scan finished for job_id={correlation_id}")
