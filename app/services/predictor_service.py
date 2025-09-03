@@ -54,7 +54,7 @@ class PredictorService:
         model.eval()
         return model
 
-    async def predict(self, stream_file: BytesIO) -> tuple[str, str, float]:
+    def predict(self, stream_file: BytesIO) -> tuple[str, str, float]:
         image = Image.open(stream_file).convert('RGB')
         input_tensor = self.transform(image).unsqueeze(0).to(self.device)
 
