@@ -63,7 +63,7 @@ class RedisStreamClient:
         return await self.redis_client.xack(stream_name, group_name, *message_ids)
 
     # 완료 시 삭제
-    async def xack_and_del(self, stream_name: str, group_name: str, message_ids: List[str]) -> int:
+    async def xack_and_del(self, stream_name: str, group_name: str, message_ids: str) -> int:
 
         acked_count = await self.redis_client.xack(stream_name, group_name, *message_ids)
 

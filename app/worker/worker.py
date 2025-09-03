@@ -19,7 +19,7 @@ class JobWorker:
                 resp = await self.redis_client.xreadgroup(
                     group_name=settings.GROUP_NAME,
                     consumer_name=settings.CONSUMER_NAME,
-                    stream_name={settings.STREAM_JOB: ">"},
+                    stream_name=settings.STREAM_JOB,
                     count=10,
                     block=5000,
                 )
