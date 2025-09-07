@@ -12,13 +12,12 @@ def get_redis_client(request: Request) -> redis.Redis:
 
 @router.post("/predict", status_code=202)
 async def create_prediction_job(job_request: JobRequest, redis_client: redis.Redis = Depends(get_redis_client)):
-    correlation_id = str(uuid.uuid4())
+    correlationId = str(uuid.uuid4())
     job = ImageJob(
-        correlationId=correlation_id,
-        presignedUrl=job_request.presigned_url,
+        correlationId=correlationId,
+        presignedUrl=job_request.presignedUrl,
         replyQueue=settings.STREAM_RESULT,
-        callbackUrl=None,
-        contentType="image/jpeg",
+        contentType=job_request.contentType,
         createdAt=datetime.utcnow().isoformat(),
         ttlSec=3600,
     )
@@ -30,4 +29,6 @@ async def create_prediction_job(job_request: JobRequest, redis_client: redis.Red
         approximate=True,
     )
 
-    return {"job_id": correlation_id}
+    print("분석 결과 발행 완료...")
+
+    return {"job_id": correlationId}
