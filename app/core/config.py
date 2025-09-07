@@ -5,11 +5,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 redis_url = os.getenv("REDIS_SERVER_URL")
-oepnai_key = os.getenv("OPENAI_API_KEY")
+openai_key = os.getenv("OPENAI_API_KEY")
 
 class Settings(BaseSettings):
     REDIS_URL: str = redis_url
-    OPENAI_KEY: str = oepnai_key
+    OPENAI_KEY: str = openai_key
 
     STREAM_JOB: str = "image.jobs" # SpringBoot에서 job 발행 (FastAPI에서 listen)
     STREAM_RESULT: str = "image.results"  # FastAPI에서 결과 발행 (SpringBoot에서 listen)
