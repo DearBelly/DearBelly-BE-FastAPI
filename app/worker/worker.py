@@ -84,7 +84,7 @@ class JobWorker:
                                 data = json.loads(payload_str)
                                 print(f"Job received id={msg_id} correlationId={correlation_id} payload={data}")
 
-                                job = data
+                                job = ImageJob.model_validate(data)
                                 # XADD까지 호출
                                 task = asyncio.create_task(process_image_scan(job, redis_client))
                                 print(f"[worker] {task} 발행 성공")
