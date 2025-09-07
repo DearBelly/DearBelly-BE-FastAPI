@@ -20,7 +20,7 @@ else
   HOST_PORT="8000"
 fi
 
-echo "Pulling image: ${IMAGE}"
+echo "Pulling new image"
 # docker pull
 docker compose pull app-${AFTER_COMPOSE_COLOR}
 docker compose up -d --no-deps --force-recreate app-${AFTER_COMPOSE_COLOR}
@@ -28,7 +28,7 @@ docker compose up -d --no-deps --force-recreate app-${AFTER_COMPOSE_COLOR}
 
 # 새 컨테이너가 running 될 때까지 대기
 for i in $(seq 1 600); do
-  if docker ps --filter "name=^/app-${AFTER_COLOR}$" --filter "status=running" --format '{{.Names}}' | grep -q .; then
+  if docker ps --filter "name=^/app-${AFTER_COMPOSE_COLOR}$" --filter "status=running" --format '{{.Names}}' | grep -q .; then
     echo "New app-${AFTER_COLOR} container is running."
     break
   fi
@@ -39,15 +39,13 @@ for i in $(seq 1 600); do
   fi
 done
 
-# 새로운 컨테이너 확인 후 Nginx 설정 변경
-if docker ps --filter "name=app-${AFTER_COMPOSE_COLOR}" --filter "status=running" --format '{{.Names}}' | grep -q .; then
-  echo "New app-${AFTER_COMPOSE_COLOR} container is running."
-  # reload nginx
-  NGINX_ID=$(sudo docker ps --filter "name=nginx" --quiet)
-  NGINX_CONFIG="/home/ubuntu/deployment/nginx.conf"
+# 이전 컨테이너 종료 및 정리
+if docker ps --filter "name=app-${AFTER_COMPOSE_COLOR}" --filter "status=running" | grep -q .; then
+  echo "Stopping old container app-${BEFORE_COMPOSE_COLOR}"
+  docker stop app-${BEFORE_COMPOSE_COLOR} || true
+  docker rm app-${BEFORE_COMPOSE_COLOR} || true
+  docker image prune -af
+fi
 
-  echo "Switching Nginx upstream config..."
-  if ! sed -i "s/app-${BEFORE_COMPOSE_COLOR}:8000/app-${AFTER_COMPOSE_COLOR}:8000/" $NGINX_CONFIG; then
-        echo "Error occured: Failed to update Nginx config. Exiting deploy script."
-        exit 1
-  fi
+echo "Deployment success."
+exit 0
