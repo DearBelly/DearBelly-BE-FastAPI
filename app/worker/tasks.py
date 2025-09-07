@@ -5,6 +5,7 @@ from datetime import datetime
 
 from app.core.config import settings
 from app.schemas.job import ImageJob, JobResult
+from app.services.openai_service import checker
 from app.services.predictor_service import predictor_service
 from app.services.s3_service import s3_service
 
@@ -27,11 +28,8 @@ async def process_image_scan(job: ImageJob, redis_client: redis.Redis):
             predictor_service.predict,
             stream_file
         )
-
-        # TODO: ChatGPT에 요청 결과 출력
-
-        isSafe = 0
-        description = "일단은 테스트입니다. 추후에 GPT 부분 추가할 예정"
+        print(f"[task] Start Asking GPT for job_id={correlationId}")
+        description, isSafe = checker.ask_chatgpt_about_pregnancy_safety(pillName)
         finishedAt = datetime.utcnow().isoformat()
 
         result = JobResult(
