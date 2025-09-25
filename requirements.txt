@@ -9,3 +9,4 @@ torchvision==0.23.0
 Pillow==11.3.0
 dotenv
 openai
+timm
