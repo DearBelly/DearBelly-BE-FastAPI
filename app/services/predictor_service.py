@@ -1,31 +1,30 @@
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import timm
 from torchvision import transforms
 from PIL import Image
 import json
 from pathlib import Path
 from io import BytesIO
 
-class LightCNN(nn.Module):
-    def __init__(self, num_classes):
+class EfficientNetBaseline(nn.Module):
+    def __init__(self, num_classes, pretrained=True, dropout=0.2):
         super().__init__()
-        self.conv1 = nn.Conv2d(3, 8, 3, padding=1)
-        self.conv2 = nn.Conv2d(8, 16, 3, padding=1)
-        self.pool = nn.MaxPool2d(2, 2)
-        self.gap = nn.AdaptiveAvgPool2d((4, 4))
-        self.fc1 = nn.Linear(16 * 4 * 4, 64)
-        self.fc2 = nn.Linear(64, num_classes)
+        self.backbone = timm.create_model(
+            "efficientnet_b3", pretrained=pretrained, num_classes=0, global_pool="avg"
+        )
+        feat_dim = self.backbone.num_features
+        self.bn = nn.BatchNorm1d(feat_dim)
+        self.dp = nn.Dropout(dropout)
+        self.fc = nn.Linear(feat_dim, num_classes)
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = self.gap(x)
-        x = x.view(x.size(0), -1)
-        x = F.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
+        feats = self.backbone(x)
+        feats = self.bn(feats)
+        feats = self.dp(feats)
+        logits = self.fc(feats)
+        return logits
 
 class PredictorService:
     def __init__(self, model_path: Path, json_path: Path):
@@ -47,10 +46,32 @@ class PredictorService:
             idx2label = {str(label): f"K-{label:06d}" for label in unique_labels}
         return idx2label
 
-    def _load_model(self, model_path: Path) -> LightCNN:
+    def _load_model(self, model_path: Path) -> EfficientNetBaseline:
         import __main__
-        __main__.LightCNN = LightCNN
-        model = torch.load(model_path, map_location=self.device, weights_only=False)
+        __main__.LightCNN = EfficientNetBaseline
+
+        object = torch.load(model_path, map_location=self.device, weights_only=False)
+
+        if isinstance(object, nn.Module) :
+            # 그 자체로 모델일 때
+            model = object.to(self.device)
+        elif isinstance(object, dict) :
+            # 반환 타입이 state_dict
+            state_dict = object
+            for k in ['state_dict', 'model_state_dict', 'model']:
+                if k in object and isinstance(object[k], dict):
+                    state_dict[k] = object[k]
+                    break
+
+            model = EfficientNetBaseline(self.num_classes).to(self.device)
+
+            missing, unexpected = model.load_state_dict(state_dict, strict=False)
+            if missing or unexpected:
+                print(f"[load_state_dict] missing keys: {missing}, unexpected keys: {unexpected}")
+        else:
+            # type 일치하지 않음
+            raise TypeError(f"Unsupported checkpoint type: {type(object)}")
+
         model.eval()
         return model
 
@@ -70,7 +91,7 @@ class PredictorService:
 
 
 HERE = Path(__file__).resolve().parent.parent
-MODEL_PATH = HERE / "models" / "models" / "best_model_0823.pt"
+MODEL_PATH = HERE / "models" / "models" / "best_model_0920.pt"
 JSON_PATH = HERE / "models" / "models" / "matched_all.json"
 
 predictor_service = PredictorService(MODEL_PATH, JSON_PATH)
