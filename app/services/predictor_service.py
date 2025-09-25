@@ -48,7 +48,7 @@ class PredictorService:
 
     def _load_model(self, model_path: Path) -> EfficientNetBaseline:
         import __main__
-        __main__.LightCNN = EfficientNetBaseline
+        __main__.EfficientNetBaseline = EfficientNetBaseline
 
         object = torch.load(model_path, map_location=self.device, weights_only=False)
 
