@@ -60,7 +60,7 @@ class PredictorService:
             state_dict = object
             for k in ['state_dict', 'model_state_dict', 'model']:
                 if k in object and isinstance(object[k], dict):
-                    state_dict[k] = object[k]
+                    state_dict = object[k]
                     break
 
             model = EfficientNetBaseline(self.num_classes).to(self.device)
