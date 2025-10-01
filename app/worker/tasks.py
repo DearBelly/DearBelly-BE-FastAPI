@@ -8,13 +8,16 @@ from app.schemas.job import ImageJob, JobResult
 from app.services.openai_service import checker
 from app.services.predictor_service import predictor_service
 from app.services.s3_service import s3_service
+import logging
+
+logger = logging.getLogger(__name__)
 
 """
 이미지를 다운 -> 다운 한 것에 대하여 모델 분석 요청
 """
 async def process_image_scan(job: ImageJob, redis_client: redis.Redis):
     correlationId = job.correlationId
-    print(f"[task] Start image scan for job_id={correlationId}")
+    logging.info(f"[task] Start image scan for job_id={correlationId}")
     try:
 
         stream_file = await asyncio.to_thread(
@@ -28,7 +31,7 @@ async def process_image_scan(job: ImageJob, redis_client: redis.Redis):
             predictor_service.predict,
             stream_file
         )
-        print(f"[task] Start Asking GPT for job_id={correlationId}")
+        logging.info(f"[task] Start Asking GPT for job_id={correlationId}")
         description, isSafe = checker.ask_chatgpt_about_pregnancy_safety(pillName)
         finishedAt = datetime.utcnow().isoformat()
 
@@ -50,9 +53,9 @@ async def process_image_scan(job: ImageJob, redis_client: redis.Redis):
             approximate=True,
         )
 
-        print(f"[task] Image scan successfully finished for job_id={correlationId}")
+        logging.info(f"[task] Image scan successfully finished for job_id={correlationId}")
 
     except Exception as e:
-        print(f"[task] Failed to process job_id={correlationId}: {e}")
+        logging.warning(f"[task] Failed to process job_id={correlationId}: {e}")
     finally:
-        print(f"[task] Image scan finished for job_id={correlationId}")
+        logging.info(f"[task] Image scan finished for job_id={correlationId}")
