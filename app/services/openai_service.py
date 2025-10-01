@@ -1,6 +1,9 @@
 from app.core.config import settings
 from openai import OpenAI
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 client = OpenAI(api_key=settings.OPENAI_KEY)
 
@@ -32,7 +35,7 @@ class PregnancySafetyChecker:
             max_tokens=600,
             response_format={"type": "json_object"}
         )
-        print("GPT Asking 성공...")
+        logger.info("GPT Asking 성공...")
         raw = response.choices[0].message.content.strip()
 
         try:
@@ -45,6 +48,7 @@ class PregnancySafetyChecker:
             else:
                 # 디버깅
                 preview = raw[:200].replace("\n", "\\n")
+                logger.warning("JSON 파싱 실패")
                 raise ValueError(f"응답이 유효한 JSON이 아닙니다. preview='{preview}'")
 
         description = data.get("description")
