@@ -4,6 +4,9 @@ from app.worker.redis_client import redis_client
 from app.core.config import settings
 from app.schemas.job import ImageJob
 from app.worker.tasks import process_image_scan
+import logging
+
+logger = logging.getLogger(__name__)
 
 """
 Redis Stream에 정의한 유효한 형식 메시지를 위한 전처리 함수
@@ -49,7 +52,7 @@ class JobWorker:
         self.redis_client = redis_client
 
     async def run(self):
-        print(f"[worker] start consumer={settings.CONSUMER_NAME} group={settings.GROUP_NAME} stream={settings.STREAM_JOB}")
+        logging.info(f"[worker] start consumer={settings.CONSUMER_NAME} group={settings.GROUP_NAME} stream={settings.STREAM_JOB}")
         reclaim_every_sec = 30
         last_reclaim = 0.0
 
@@ -82,12 +85,12 @@ class JobWorker:
 
                                 # 최종 반환 data
                                 data = json.loads(payload_str)
-                                print(f"Job received id={msg_id} correlationId={correlation_id} payload={data}")
+                                logging.info(f"Job received id={msg_id} correlationId={correlation_id} payload={data}")
 
                                 job = ImageJob.model_validate(data)
                                 # XADD까지 호출
                                 task = asyncio.create_task(process_image_scan(job, redis_client))
-                                print(f"[worker] {task} 발행 성공")
+                                logging.info(f"[worker] {task} 발행 성공")
 
                                 # 처리 성공 시에만 ack 후 del
                                 task.add_done_callback(lambda t: asyncio.create_task(
@@ -132,7 +135,7 @@ class JobWorker:
                             job = ImageJob.model_validate_json(payload)
 
                             task = asyncio.create_task(process_image_scan(job, self.redis_client))
-                            print(f"[worker] {task} 발행 성공")
+                            logging.info(f"[worker] {task} 발행 성공")
 
                             def _on_done(t: asyncio.Task, *, msg_id=msg_id, fields=fields):
                                 async def _ack_or_dlq():
@@ -155,8 +158,8 @@ class JobWorker:
                             await self.redis_client.xadd(f"{settings.STREAM_JOB}:DLQ", clean)
 
             except asyncio.CancelledError:
-                print("[worker] cancelled; bye")
+                logging.warning("[worker] cancelled; bye")
                 break
             except Exception as e:
-                print(f"[worker] error: {e}")
+                logging.warning(f"[worker] error: {e}")
                 await asyncio.sleep(1)
