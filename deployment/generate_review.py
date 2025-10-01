@@ -22,7 +22,7 @@ def send_prompt():
         raise Exception("환경 변수(GEMINI_API_KEY, GITHUB_TOKEN)가 설정되지 않았습니다.")
 
     genai.configure(api_key=gemini_api_key)
-    model = genai.GenerativeModel('gemini-1.5-pro-latest')
+    model = genai.GenerativeModel(model_name="gemini-2.5-pro")
     g = Github(github_token)
 
     # GitHub Actions 컨텍스트에서 PR 정보 가져오기
