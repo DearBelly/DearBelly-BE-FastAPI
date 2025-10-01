@@ -1,7 +1,9 @@
 from fastapi import FastAPI, Request
 from app.core.lifespan import lifespan
 from app.api.endpoints import predictions
+from app.core.logging_config import setup_logging
 
+setup_logging()
 app = FastAPI(
     title="DearBelly CV API",
     description="DearBelly CV를 위한 Swagger 입니다.",
