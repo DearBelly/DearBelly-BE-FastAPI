@@ -10,3 +10,4 @@ Pillow==11.3.0
 dotenv
 openai
 timm
+logging
