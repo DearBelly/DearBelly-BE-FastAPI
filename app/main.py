@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from app.core.lifespan import lifespan
 from app.api.endpoints import predictions
 from app.core.logging_config import setup_logging
+from prometheus_fastapi_instrumentator import Instrumentator
 
 setup_logging()
 app = FastAPI(
@@ -11,6 +12,8 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+instrumentator = Instrumentator().instrument(app)
+instrumentator.expose(app, include_in_schema=False, endpoint="/actuator/prometheus")
 app.include_router(predictions.router, prefix="/api/v1", tags=["Prediction"])
 
 @app.get("/health")
