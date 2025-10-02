@@ -22,8 +22,8 @@ fi
 
 echo "Pulling new image"
 # docker pull
-docker compose pull app-${AFTER_COMPOSE_COLOR}
-docker compose up -d --no-deps --force-recreate app-${AFTER_COMPOSE_COLOR}
+docker compose -f docker-compose.yml pull app-${AFTER_COMPOSE_COLOR}
+docker compose -f docker-compose.yml up -d --no-deps --force-recreate app-${AFTER_COMPOSE_COLOR}
 
 
 # 새 컨테이너가 running 될 때까지 대기

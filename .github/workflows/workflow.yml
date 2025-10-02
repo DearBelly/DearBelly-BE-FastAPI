@@ -44,7 +44,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: ./deployment/
-          target: /home/ubuntu/deployment
+          target: /home/ubuntu/dearbelly
 
   deploy:
     name: Deploy
