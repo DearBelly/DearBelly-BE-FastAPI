@@ -28,6 +28,30 @@ services:
     networks:
       - mynetwork
 
+  dcgm-exporter:
+      image: nvcr.io/nvidia/k8s/dcgm-exporter:latest
+      container_name: dcgm-exporter
+      ports:
+        - "9400:9400"
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: all
+                capabilities: [gpu]
+      environment:
+        - NVIDIA_VISIBLE_DEVICES=all
+        - NVIDIA_DRIVER_CAPABILITIES=utility,compute
+      restart: unless-stopped
+      networks:
+        - mynetwork
+      healthcheck:
+        test: [ "CMD", "wget", "-qO-", "http://localhost:9400/metrics" ]
+        interval: 30s
+        timeout: 5s
+        retries: 5
+
 networks:
   mynetwork:
     driver: bridge
