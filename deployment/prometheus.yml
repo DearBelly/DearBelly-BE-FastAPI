@@ -16,19 +16,15 @@ scrape_configs:
     honor_timestamps: false
     scheme: 'http'
     static_configs:
-      - targets: ['${REMOTE_HOST}:9090']
+      - targets: ['127.0.0.1:9090']
         labels:
           service: 'monitor-1'
   - job_name: 'node'
     static_configs:
-      - targets: ['${REMOTE_HOST}:9090']
-  - job_name: 'fastapi-actuator-blue'
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 1m
+      - targets: ['127.0.0.1:9090']
+  - job_name: 'dcgm'
+    scrape_interval: 15s
     static_configs:
-      - targets: [ 'app-blue:8000' ]
-  - job_name: 'fastapi-actuator-green'
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 1m
-    static_configs:
-      - targets: [ 'app-green:8001' ]
+      - targets: ['dcgm-exporter:9400']
+        labels:
+          exporter: 'dcgm'
