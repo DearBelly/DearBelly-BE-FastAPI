@@ -28,6 +28,25 @@ services:
     networks:
       - mynetwork
 
+  dcgm-exporter:
+      image: nvcr.io/nvidia/k8s/dcgm-exporter:latest
+      container_name: dcgm-exporter
+      ports:
+        - "9400:9400"
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: all
+                capabilities: [gpu]
+      environment:
+        - NVIDIA_VISIBLE_DEVICES=all
+        - NVIDIA_DRIVER_CAPABILITIES=utility,compute
+      restart: unless-stopped
+      networks:
+        - mynetwork
+
 networks:
   mynetwork:
     driver: bridge

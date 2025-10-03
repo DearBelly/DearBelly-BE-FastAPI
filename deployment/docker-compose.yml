@@ -13,6 +13,8 @@ services:
               count: 1
               capabilities: [gpu]
     container_name: app-blue
+    networks:
+      - mynetwork
 
   app-green:
     image: ${ECR_URI}/dearbelly-cv:latest
@@ -28,3 +30,9 @@ services:
               count: 1
               capabilities: [ gpu ]
     container_name: app-green
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
